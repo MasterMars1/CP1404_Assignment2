@@ -1,0 +1,24 @@
+BoxLayout:
+    orientation: 'vertical'
+    BoxLayout:
+        orientation: 'horizontal'
+        BoxLayout:
+            orientation: 'vertical'
+            Button:
+                text: "List Required"
+                on_release: app.list_required()
+            Button:
+                text: "List Completed"
+                on_release: app.list_completed()
+        BoxLayout:
+            orientation 'vertical'
+            Label:
+                id: total_cost_label
+            Button:
+                text: app.list_required
+                
+
+    Label:
+        id: status_label
+        size_hint_y: 0.1
+        text: app.status_text
