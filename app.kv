@@ -11,13 +11,14 @@ BoxLayout:
                 text: "List Completed"
                 on_release: app.list_completed()
         BoxLayout:
-            orientation 'vertical'
+            #orientation 'horizontal'
             Label:
                 id: total_cost_label
+                size_hint_y: 0.1
             Button:
-                text: app.list_required
-                
-
+                id: entry_box
+                cols: 1
+                orientation: 'vertical'
     Label:
         id: status_label
         size_hint_y: 0.1
