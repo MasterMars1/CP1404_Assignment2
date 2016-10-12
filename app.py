@@ -3,6 +3,7 @@ from kivy.lang import Builder
 from kivy.uix.button import Button
 from kivy.properties import StringProperty
 from itemlist import ItemList
+from item import Item
 from HarmonSinghA1 import load_items
 import csv
 
@@ -20,42 +21,26 @@ class Shopping_List_App(App):
         self.root = Builder.load_file('app.kv')
         return self.root
 
-    # Load items from csv and put in a list called item_list
-    # def load_items(self):
-    #     self.item_list = []
-    #     with open('items.csv', 'r', newline='') as file:
-    #         for item in file.readlines():
-    #             item = item.strip().split(',')
-    #             item[2] = int(item[2])
-    #             item[1] = float(item[1])
-    #             self.item_list.append(item)
-    #         self.item_list.sort(key=lambda row: row[2], reverse=False)
-    #     return self.item_list
-
-    # Write list item_list back on the csv file after alterations
-    # def write_items(item_list):
-    #     with open("items.csv", 'w', newline='') as file:
-    #         writer = csv.writer(file)
-    #         for item in item_list:
-    #             writer.writerow(item)
-
     def list_required(self):
+        #self.root.ids.bottom_status_text.text = "Click items to mark them as completed"
         self.total_price = 0
         for item in self.items:
             if item.required == 'r':
-                self.item.price = self.total_price + self.item.price
+                self.total_price = self.total_price + item.price
                 # create a button for each item
                 temp_button = Button(text=item.name)
                 temp_button.bind(on_release=self.press_list_required)
                 # add the button to the "entriesBox" using add_widget()
                 self.root.ids.entry_box.add_widget(temp_button)
-        #return self.total_price
+        #self.total_price = float(self.total_price)
+        #self.root.ids.top_status_text.text = "Total price: ${}".format(self.total_price)
 
     def list_completed(self):
+        self.root.ids.bottom_status_text.text = "Showing completed items"
         self.total_price = 0
         for item in self.items:
             if item.required == 'c':
-                self.item.price = self.total_price + self.item.price
+                # self.total_price = self.total_price + self.item.price
                 # create a button for each item
                 temp_button = Button(text=item.name)
                 temp_button.bind(on_release=self.press_list_completed)
@@ -64,15 +49,19 @@ class Shopping_List_App(App):
         self.total_price = float(self.total_price)
 
     def press_list_required(self):
-        #Mark item as completed
-        self.status_text = "Click items to mark them as completed"
+        self.items.mark_item
 
     def press_list_completed(self):
-        #Mark item as required
-        self.status_text = "These are the items that have been completed"
+        self.root.ids.status_text.text = "Showing completed items"
 
-    def total_cost_label(self, total_cost):
-        self.root.ids.total_cost_label.text = "Total price: ${}".format(self.total_cost)
+    #def top_status_label(self):
+     #   self.root.ids.bottom_status_label.text = str(self.top_status)
+
+    def clear_item_inputs(self):
+        self.root.ids.entry_box.clear_widgets()
+        self.root.ids.new_item_name.text = ""
+        self.root.ids.new_item_price.text = ""
+        self.root.ids.new_item_priority.text = ""
 
 
 Shopping_List_App().run()

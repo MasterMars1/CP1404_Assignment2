@@ -7,19 +7,41 @@ BoxLayout:
             Button:
                 text: "List Required"
                 on_release: app.list_required()
+                #on_press: app.status_label_two()
             Button:
                 text: "List Completed"
                 on_release: app.list_completed()
-        BoxLayout:
-            #orientation 'horizontal'
             Label:
-                id: total_cost_label
-                size_hint_y: 0.1
+                text: "Add New Item..."
+            Label:
+                text: "Name:"
+            TextInput:
+                id: new_item_name
+            Label:
+                text: "Price:"
+            TextInput:
+                id: new_item_price
+            Label:
+                text: "Priority"
+            TextInput:
+                id: new_item_priority
             Button:
+                text: "Add Item"
+                on_release: app.add_new_item(new_item_name.text, new_item_price.text, new_item_priority.text)
+            Button:
+                text: "Clear"
+                on_release: app.clear_item_inputs()
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                id: top_status_label
+                size_hint_y: 0.1
+                #text: app.
+            BoxLayout:
                 id: entry_box
                 cols: 1
                 orientation: 'vertical'
     Label:
-        id: status_label
+        id: bottom_status_label
         size_hint_y: 0.1
-        text: app.status_text
+        #text: app.status_text

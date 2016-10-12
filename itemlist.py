@@ -1,6 +1,5 @@
 from item import Item
 
-
 class ItemList:
     def __init__(self):
         self.items = []
@@ -15,3 +14,6 @@ class ItemList:
 
     def __iter__(self):
         return iter(self.items)
+
+    def add_new_item(self, item_name, item_price, item_priority):
+        self.items.append([item_name, item_price, item_priority, 'r'])
