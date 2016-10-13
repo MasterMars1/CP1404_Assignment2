@@ -11,7 +11,8 @@ __author__ = 'Harmon Singh'
 
 
 class Shopping_List_App(App):
-    status_text = StringProperty()
+    top_status_label = StringProperty()
+    bottom_status_label = StringProperty()
 
     def build(self):
         self.items = ItemList()
@@ -19,49 +20,74 @@ class Shopping_List_App(App):
         self.items.add_items_from_list(items_as_lists)
         self.title = "Shopping List App"
         self.root = Builder.load_file('app.kv')
+        self.list_required()
         return self.root
 
     def list_required(self):
-        #self.root.ids.bottom_status_text.text = "Click items to mark them as completed"
-        self.total_price = 0
+        self.bottom_status_text.text = "Click items to mark them as completed"
         for item in self.items:
             if item.required == 'r':
-                self.total_price = self.total_price + item.price
+                if item.priority == 1:
+                    temp_button = Button(background_color=[1, 0, 0, 1], text=item.name)
+                elif item.priority == 2:
+                    temp_button = Button(background_color=[0, 1, 0, 1], text=item.name)
+                elif item.priority == 3:
+                    temp_button = Button(background_color=[0, 0, 1, 1], text=item.name)
                 # create a button for each item
-                temp_button = Button(text=item.name)
-                temp_button.bind(on_release=self.press_list_required)
+                temp_button.bind(on_release=self.mark_item)
+                temp_button.bind(on_release=self.bottom_status_label)
                 # add the button to the "entriesBox" using add_widget()
                 self.root.ids.entry_box.add_widget(temp_button)
-        #self.total_price = float(self.total_price)
-        #self.root.ids.top_status_text.text = "Total price: ${}".format(self.total_price)
+        self.total_price = float(self.total_price)
+        self.root.ids.top_status_text.text = "Total price: ${}".format(self.total_price)
 
     def list_completed(self):
-        self.root.ids.bottom_status_text.text = "Showing completed items"
-        self.total_price = 0
+        #self.root.ids.bottom_status_text.text = "Showing completed items"
         for item in self.items:
             if item.required == 'c':
-                # self.total_price = self.total_price + self.item.price
                 # create a button for each item
                 temp_button = Button(text=item.name)
                 temp_button.bind(on_release=self.press_list_completed)
                 # add the button to the "entriesBox" using add_widget()
                 self.root.ids.entry_box.add_widget(temp_button)
-        self.total_price = float(self.total_price)
+        #self.total_price = float(self.total_price)
 
-    def press_list_required(self):
-        self.items.mark_item
+    def mark_item(self, instance):
+        name = instance.text
+        item = self.items.get_item_by_name(name)
+        item.mark_item()
+        self.clear_all()
+        self.list_required()
 
     def press_list_completed(self):
         self.root.ids.status_text.text = "Showing completed items"
 
-    #def top_status_label(self):
-     #   self.root.ids.bottom_status_label.text = str(self.top_status)
+    def bottom_status_label(self):
+        self.bottom_status_label.text = self.bottom_status
 
-    def clear_item_inputs(self):
+    def top_status_label(self):
+        self.top_status_label.text = self.top_status
+
+    def clear_all(self):
         self.root.ids.entry_box.clear_widgets()
         self.root.ids.new_item_name.text = ""
         self.root.ids.new_item_price.text = ""
         self.root.ids.new_item_priority.text = ""
+
+    def new_item_name(self):
+        name = self.root.ids.new_item_name.text
+        return name
+
+    def new_item_price(self):
+        price = self.root.ids.new_item_price.text
+        return price
+
+    def new_item_priority(self):
+        priority = self.root.ids.new_item_priority.text
+        return priority
+
+    def add_item(self):
+        self.items.add_new_item(self.new_item_name(), self.new_item_price(), self.new_item_priority())
 
 
 Shopping_List_App().run()

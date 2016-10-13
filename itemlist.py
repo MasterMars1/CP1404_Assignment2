@@ -1,5 +1,6 @@
 from item import Item
 
+
 class ItemList:
     def __init__(self):
         self.items = []
@@ -17,3 +18,14 @@ class ItemList:
 
     def add_new_item(self, item_name, item_price, item_priority):
         self.items.append([item_name, item_price, item_priority, 'r'])
+
+    def get_item_by_name(self, name):
+        for item in self.items:
+            if name == item.name:
+                return item
+
+    def get_total_price(self, total_price = 0):
+        for item in self.items:
+            if item.required == 'r':
+                total_price += item.price
+        return total_price

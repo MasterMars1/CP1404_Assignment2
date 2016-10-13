@@ -1,8 +1,8 @@
 class Item:
     def __init__(self, name, price, priority, required):
         self.name = name
-        self.price = price
-        self.priority = priority
+        self.price = float(price)
+        self.priority = int(priority)
         self.required = required
 
     def __str__(self):

@@ -6,11 +6,10 @@ BoxLayout:
             orientation: 'vertical'
             Button:
                 text: "List Required"
-                on_release: app.list_required()
-                #on_press: app.status_label_two()
+                on_release: app.clear_all(), app.list_required()
             Button:
                 text: "List Completed"
-                on_release: app.list_completed()
+                on_release: app.clear_all(), app.list_completed()
             Label:
                 text: "Add New Item..."
             Label:
@@ -30,18 +29,16 @@ BoxLayout:
                 on_release: app.add_new_item(new_item_name.text, new_item_price.text, new_item_priority.text)
             Button:
                 text: "Clear"
-                on_release: app.clear_item_inputs()
+                on_release: app.clear_all()
         BoxLayout:
             orientation: 'vertical'
             Label:
-                id: top_status_label
                 size_hint_y: 0.1
-                #text: app.
+                text: app.top_status_label
             BoxLayout:
                 id: entry_box
                 cols: 1
                 orientation: 'vertical'
     Label:
-        id: bottom_status_label
         size_hint_y: 0.1
-        #text: app.status_text
+        text: app.bottom_status_label
