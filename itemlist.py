@@ -16,16 +16,22 @@ class ItemList:
     def __iter__(self):
         return iter(self.items)
 
-    def add_new_item(self, item_name, item_price, item_priority):
-        self.items.append([item_name, item_price, item_priority, 'r'])
+    def add_new_item(self, item):
+        self.items.append(item)
 
     def get_item_by_name(self, name):
         for item in self.items:
             if name == item.name:
                 return item
 
-    def get_total_price(self, total_price = 0):
+    def get_total_price(self, total_price=0):
         for item in self.items:
-            if item.required == 'r':
+            if item.required == Item.REQUIRED:
                 total_price += item.price
         return total_price
+
+    def get_items_as_list(self):
+        return [[item.name, item.price, item.priority, item.required] for item in self.items]
+
+    def sort_item_by_priority(self):
+        sorted(self.items, key=lambda item: item.priority)

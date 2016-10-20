@@ -5,9 +5,11 @@ BoxLayout:
         BoxLayout:
             orientation: 'vertical'
             Button:
+                id: list_required
                 text: "List Required"
                 on_release: app.clear_all(), app.list_required()
             Button:
+                id: list_completed
                 text: "List Completed"
                 on_release: app.clear_all(), app.list_completed()
             Label:
@@ -16,17 +18,27 @@ BoxLayout:
                 text: "Name:"
             TextInput:
                 id: new_item_name
+                multiline: False
+                write_tab: False
+                on_text_validate: new_item_price.focus=True
             Label:
                 text: "Price:"
             TextInput:
                 id: new_item_price
+                multiline: False
+                write_tab: False
+                on_text_validate: new_item_priority.focus=True
             Label:
                 text: "Priority"
             TextInput:
                 id: new_item_priority
+                multiline: False
+                write_tab: False
+                #on_text_validate: app.add_new_item(new_item_name.text, new_item_price.text, new_item_priority.text).focus=True
             Button:
                 text: "Add Item"
-                on_release: app.add_new_item(new_item_name.text, new_item_price.text, new_item_priority.text)
+                on_release: app.add_item()
+                #on_release: app.add_new_item(new_item_name.text, new_item_price.text, new_item_priority.text)
             Button:
                 text: "Clear"
                 on_release: app.clear_all()

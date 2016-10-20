@@ -1,4 +1,7 @@
 class Item:
+    COMPLETED = "c"
+    REQUIRED = "r"
+
     def __init__(self, name, price, priority, required):
         self.name = name
         self.price = float(price)
@@ -9,4 +12,4 @@ class Item:
         return "{} ({}) : ${:2f}".format(self.name, self.price, self.priority)
 
     def mark_item(self):
-        self.required = "c"
+        self.required = Item.COMPLETED
