@@ -21,14 +21,15 @@ BUTTON_COLOURS = {1: (1, 0, 0, 1), 2: (0, 1, 0, 1), 3: (0, 0, 1, 1)}
 
 class ShoppingListApp(App):
     """
-    This Class is the main program. Methods are called from other classes to provide the kivy with tasks for buttons labels etc.
+    This Class is the main program. Methods are called from other classes to provide
+    the kivy with tasks for buttons labels etc.
     """
     top_status_label = StringProperty()
     bottom_status_label = StringProperty()
 
     def build(self):
         """
-        Builds the GUI using kivy and performs tasks on boot
+        Builds the GUI using kivy and performs tasks on boot. Loads items as a list of lists, into items as lists
         """
         self.items = ItemList()
         items_as_lists = load_items()
@@ -38,12 +39,20 @@ class ShoppingListApp(App):
         self.list_required()
         return self.root
 
+    def on_stop(self):
+        """
+        Writes self.items to csv by calling the method save_items in itemlist.py
+        """
+        items = self.items.save_items()
+        write_items(items)
+
     def list_required(self):
         """
-        Lists required items by creating widgets for marking off items and giving them colour based on priority. This is also sorted by priority and keeps the list required button highlighter after press.
+        Lists required items by creating widgets for marking off items and giving them colour based on priority.
+        This is also sorted by priority and keeps the list required button highlighter after press.
         """
         self.items.sort_item_by_priority()
-        self.clear_all()
+        self.root.ids.entry_box.clear_widgets()
         self.root.ids.list_required.state = "down"
         self.root.ids.list_completed.state = "normal"
         self.bottom_status_label = "Click items to mark them as completed"
@@ -52,15 +61,17 @@ class ShoppingListApp(App):
                 temp_button = Button(text=item.name, background_color=BUTTON_COLOURS[item.priority])
                 # create a button for each item
                 temp_button.bind(on_release=self.mark_item)
-                # add the button to the "entriesBox" using add_widget()
+                # add the button to the "entry_box" using add_widget()
                 self.root.ids.entry_box.add_widget(temp_button)
         total_price = self.items.get_total_price()
         self.top_status_label = "Total price: ${}".format(total_price)
 
     def list_completed(self):
         """
-        Lists completed items by creating widgets for completed items. Also keeps the list completed button highlighted after press.
+        Lists completed items by creating widgets for completed items.
+        Also keeps the list completed button highlighted after press.
         """
+        self.root.ids.entry_box.clear_widgets()
         self.root.ids.list_required.state = "normal"
         self.root.ids.list_completed.state = "down"
         self.bottom_status_label = "Showing completed items"
@@ -69,10 +80,13 @@ class ShoppingListApp(App):
                 # create a button for each item
                 temp_button = Button(text=item.name)
                 temp_button.bind(on_release=self.display_item_info)
-                # add the button to the "entriesBox" using add_widget()
+                # add the button to the "entry_box" using add_widget()
                 self.root.ids.entry_box.add_widget(temp_button)
 
     def mark_item(self, instance):
+        """
+        Marks the item clicked on as completed
+        """
         name = instance.text
         item = self.items.get_item_by_name(name)
         item.mark_item()
@@ -80,67 +94,57 @@ class ShoppingListApp(App):
         self.list_required()
 
     def display_item_info(self, instance):
+        """
+        Displays the items information in the bottom status label (at the bottom of the app)
+        """
         name = instance.text
         item = self.items.get_item_by_name(name)
         self.bottom_status_label = "{}, ${}, priority {} (completed)".format(item.name, item.price, item.priority)
 
-    def clear_all(self):
-        self.root.ids.entry_box.clear_widgets()
+    def clear_new_item_inputs(self):
+        """
+        Clears the input boxes that ask for item name, pirce and priority
+        """
         self.root.ids.new_item_name.text = ""
         self.root.ids.new_item_price.text = ""
         self.root.ids.new_item_priority.text = ""
-        self.top_status_label = ""
-        self.bottom_status_label = ""
 
-    def new_item_name(self):
+    def get_new_item(self):
+        """
+        Gets the inputs from the text input boxes and runs them through error checking before calling the add new item
+        method in itemlist.py and then resets the list required to include the new item
+        """
         name = self.root.ids.new_item_name.text
-        self.invalid_name = True
-        while self.invalid_name:
-            if name.replace(" ", "") == "":
-                self.bottom_status_label = "All fields must be completed"
-            else:
-                self.invalid_name = False
-        return name
+        price = self.root.ids.new_item_price.text
+        priority = self.root.ids.new_item_priority.text
 
-    def new_item_price(self):
-        self.invalid_price = True
-        while self.invalid_price:
+        if name == "" or price == "" or priority == "":
+            self.bottom_status_label = "All fields must be completed"
+        else:
             try:
-                price = self.root.ids.new_item_price.text
+                price = float(price)
+                # The error checking enables the user to correctly input and any incorrect inputs is dealt by displaying
+                # an error
                 if price < 0:
                     self.bottom_status_label = "Price must not be negative"
-                    continue
+                    return
             except ValueError:
                 self.bottom_status_label = "Please enter a valid number"
-            else:
-                self.invalid_price = False
-        return price
+                return
 
-    def new_item_priority(self):
-        self.invalid_priority = True
-        while self.invalid_priority:
             try:
-                priority = self.root.ids.new_item_priority.text
-                if priority < 1 or priority > 3:
+                priority = int(priority)
+                if priority <= 0 or priority > 3:
                     self.bottom_status_label = "Priority must be 1, 2 or 3"
-                    continue
+                    return
             except ValueError:
                 self.bottom_status_label = "Please enter a valid number"
-            else:
-                self.invalid_priority = False
-        return priority
+                return
 
-    def add_item(self):
-        new_item = Item(self.new_item_name(), self.new_item_price(), self.new_item_priority(), Item.REQUIRED)
-        if self.invalid_name == False and self.invalid_price == False and self.invalid_priority == False:
-            self.items.add_new_item(new_item)
-            self.root.ids.new_item_name.text = ""
-            self.root.ids.new_item_price.text = ""
-            self.root.ids.new_item_priority.text = ""
+            # this is the method from itemlist that appends the new item to the existing list
+            self.items.add_item_input(name, price, priority)
             self.list_required()
-
-    def on_stop(self):
-        write_items(self.items.get_items_as_list())
+            self.clear_new_item_inputs()
 
 
 ShoppingListApp().run()
